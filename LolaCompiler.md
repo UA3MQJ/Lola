@@ -246,7 +246,7 @@ BEGIN ... term(x);
     LSS.Get(sym); term(y); z := New(add, x, y); CheckTypes(x, y, z); x := z
   END
 END SimpleExpression;
-
+```
 Tag values are
 
 ```
