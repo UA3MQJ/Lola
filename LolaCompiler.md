@@ -1,12 +1,7 @@
-# An Implementation of Lola-
+# An Implementation of Lola or Translating from Lola to Verilog
 
-# or
-
-# Translating from Lola to Verilog
-
-```
 N.Wirth, 30.11.
-```
+
 ## 1. Introduction
 
 The hardware description language Lola (Logic Language) was designed in 1990 as an effort to
@@ -57,7 +52,7 @@ between variables and registers. The latter represent the input value assigned i
 cycle, whereas variables appear only in the role of names for expressions.
 
 
-## 1. The language Lola-
+## 1. The language Lola-2
 
 This HDL is structured in the style of Oberon, a descendant of Algol and Pascal. It features
 declarations of constants, types, variables and registers. Expressions contain logical and arithmetic
@@ -65,10 +60,10 @@ operators and relations. Expressions are assigned to variables and registers by 
 unlike in Oberon, all assignments are static, and their order is irrelevant. The language is defined in
 https://www.inf.ethz.ch/personal/wirth/Lola/Lola2.pdf
 
-There are two constructs in Lola which have no counterparts in Oberon; They are the constructor
-and the range, and they are inspired by Verilog. Both form sequences of bits (bitstrings), and they
-breach the otherwise strict typing rules. The range denotes a subsection of a bitstring variable. If x
-is a bitstring (of type [N] BIT, x[n:m] denotes the subrange of bits x[n] ... x[m] with a length of n-m+1.
+There are two constructs in Lola which have no counterparts in Oberon; They are the *constructor*
+and the *range*, and they are inspired by Verilog. Both form sequences of bits (bitstrings), and they
+breach the otherwise strict typing rules. The range denotes a subsection of a bitstring variable. If *x*
+is a bitstring (of type *[N] BIT, x[n:m]* denotes the subrange of bits *x[n] ... x[m]* with a length of *n-m+1*.
 (n >= m). A constructor consists of a sequence of elements (fields), each denoting a bit sequence.
 An example, where x and y are variables (of 8 bits each), is
 
@@ -84,13 +79,13 @@ logical expressions.
 
 ```
 MODULE Counter0 (IN clk: BIT; OUT d: [4] BIT);
-REG R: [4] BIT;
+  REG R: [4] BIT;
 BEGIN
-R := {R.3 ^ R.3 & R.2 & R.1 & R.0, (*R.3*)
-R.2 ^ R.2 & R.1 & R.0, (*R.2*)
-R.1 ^ R.1 & R.0, (*R.1*)
-~R.0}; (*R.0*)
-d := R
+  R := {R.3 ^ R.3 & R.2 & R.1 & R.0, (*R.3*)
+       R.2 ^ R.2 & R.1 & R.0, (*R.2*)
+       R.1 ^ R.1 & R.0, (*R.1*)
+       ~R.0}; (*R.0*)
+  d := R
 END Counter0.
 ```
 This results in the following translation to Verilog:
@@ -98,13 +93,14 @@ This results in the following translation to Verilog:
 ```
 `timescale 1ns / 1 ps
 module Counter0( // translated from Lola
-input clk,
-output [3:0] d);
-reg [3:0] R;
-assign d = R;
-always @ (posedge clk) begin R <= {(R[3] ^ (((R[3] & R[2]) & R[1]) & R[0])), (R[2] ^ ((R[2] & R[1]) &
-R[0])), (R[1] ^ (R[1] & R[0])), ~R[0]};
-end
+  input clk,
+  output [3:0] d);
+
+  reg [3:0] R;
+  assign d = R;
+  always @ (posedge clk) begin
+    R <= {(R[3] ^ (((R[3] & R[2]) & R[1]) & R[0])), (R[2] ^ ((R[2] & R[1]) & R[0])), (R[1] ^ (R[1] & R[0])), ~R[0]};
+  end
 endmodule
 ```
 The second example is also a 4-bit counter, but with reset and enable signals and expressed using
@@ -112,10 +108,10 @@ the addition operator.
 
 ```
 MODULE Counter1 (IN clk, rst, enb: BIT; OUT d: [4] BIT);
-REG R: [4] BIT;
+  REG R: [4] BIT;
 BEGIN
-R := rst -> 0 : enb -> R + 1 : R;
-d := R
+  R := rst -> 0 : enb -> R + 1 : R;
+  d := R
 END Counter1.
 ```
 Its translation is
@@ -123,15 +119,14 @@ Its translation is
 ```
 `timescale 1ns / 1 ps
 module Counter1( // translated from Lola
-input clk, rst, enb,
-output [3:0] d);
-```
+  input clk, rst, enb,
+  output [3:0] d);
 
-```
-reg [3:0] R;
-assign d = R;
-always @ (posedge clk) begin R <= rst? 0 : enb? (R + 1) : R;
-end
+  reg [3:0] R;
+  assign d = R;
+  always @ (posedge clk) begin
+    R <= rst? 0 : enb? (R + 1) : R;
+  end
 endmodule
 ```
 Lola allows to specify modules in the form of types. They can be instantiated as variables. If, for
@@ -139,10 +134,10 @@ example, a type is declared as
 
 ```
 TYPE Counter := MODULE (IN clk, rst, enb: BIT; OUT d: [4] BIT);
-REG R: [4] BIT;
+  REG R: [4] BIT;
 BEGIN
-R := rst -> 0 : enb -> R + 1 : R;
-d := R
+  R := rst -> 0 : enb -> R + 1 : R;
+  d := R
 END Counter
 ```
 the variable declarations
@@ -155,7 +150,7 @@ instantiate three such counters. They are assigned "values" by assignments such 
 ```
 C0(clk, rst, enb0); C1(clk, rst, enb1); C2(clk, rst, enb2)
 ```
-where clk, rst, enb0, enb1, enb2 are declared variables.
+where *clk*, *rst*, *enb0*, *enb1*, *enb2* are declared variables.
 
 As an aside, the type declaration is in analogy to the procedure (type) declaration in programming
 languages, and the instantiations to procedure calls. This facility allows the construction of arrays
@@ -174,40 +169,33 @@ contained tri-state gates as circuit elements. In more recent desihns, they have
 FPGA due to short circuits. A tri-state port io is specified by the symbol INOUT in the module's
 parameter list. Ihe connections are specified by the statement
 
-TS(io, in, out, ctrl)
-
+```
+  TS(io, in, out, ctrl)
+```
 where
 
-io tri-state parameter,
-in input to the circuit from the port
-out output from the circuit to the port
-ctrl control: 0 for input, 1 for output
+```
+  io   - tri-state parameter,
+  in   - input to the circuit from the port
+  out  - output from the circuit to the port
+  ctrl - control: 0 for input, 1 for output
+```
+
+image1.png
 
 ## 3. The Lola-2 compiler
 
 The design of the Lola translator follows quite strictly the principles described in Compiler
 construction (http://www.inf.ethz.ch/personal/wirth/CompilerConstruction/index.html). The main
 module (LSP) is the parser. It relies on the scanner (LSS) translating input character sequences
-
-```
-ctrl
-```
-```
-io port
-```
-```
-in
-```
-```
-out
-```
-
 into language symbols. The parser, a top-down, recursive-descent algorithm, requests symbols
-from the scanner by calling procedure Get. The output, generated while reading source text, is not
+from the scanner by calling procedure *Get*. The output, generated while reading source text, is not
 another text, but a binary tree. A generator module (LSV), described later, subsequently traverses
 this tree.
 
-The relevant commands are LSC.Compile @ and LSV.List filename.
+image2.png
+
+The relevant commands are *LSC.Compile* @ and *LSV.List filename*.
 
 The structure of the elements of the tree is defined in a base module (LSB). This is in order to let
 modules generating translations access this tree without having to refer to the parser. The tree's
@@ -218,69 +206,45 @@ constructed. The list of all declared objects is anchored in the global variable
 
 ```
 TYPE Item = POINTER TO ItemDesc;
-Object = POINTER TO ObjDesc;
-Type = POINTER TO TypeDesc;
-ArrayType = POINTER TO ArrayTypeDesc;
-UnitType = POINTER TO UnitTypeDesc;
-```
-```
-ItemDesc = RECORD
-tag: INTEGER;
-type: Type;
-val, size: INTEGER;
-a, b: Item
-END ;
-ObjDesc = RECORD (ItemDesc)
-next: Object;
-name: ARRAY 32 OF CHAR;
-marked: BOOLEAN
-END
-```
-```
-TypeDesc = RECORD len, size: INTEGER; typobj: Object END ;
-ArrayTypeDesc = RECORD (TypeDesc) eltyp: Type END ;
-UnitTypeDesc = RECORD (TypeDesc) firstobj: Object END ;
+  Object = POINTER TO ObjDesc;
+  Type = POINTER TO TypeDesc;
+  ArrayType = POINTER TO ArrayTypeDesc;
+  UnitType = POINTER TO UnitTypeDesc;
+
+  ItemDesc = RECORD
+    tag: INTEGER;
+    type: Type;
+    val, size: INTEGER;
+    a, b: Item
+  END ;
+
+  ObjDesc = RECORD (ItemDesc)
+    next: Object;
+    name: ARRAY 32 OF CHAR;
+    marked: BOOLEAN
+  END
+
+  TypeDesc = RECORD len, size: INTEGER; typobj: Object END ;
+  ArrayTypeDesc = RECORD (TypeDesc) eltyp: Type END ;
+  UnitTypeDesc = RECORD (TypeDesc) firstobj: Object END ;
+
 VAR root: Object;
 ```
-New items and objects are generated by the function procedures New(tag, a, b) and
-NewObject(class). The main attributes of an item are a tag, typically representing an operator, and
-a data type. The item's branches are a and b. The additional attributes of objects are their name
-and a link next which is used to form lists of variables and registers.
+New items and objects are generated by the function procedures *New(tag, a, b)* and
+*NewObject(class)*. The main attributes of an item are a tag, typically representing an operator, and
+a data type. The item's branches are *a* and *b*. The additional attributes of objects are their *name*
+and a link *next* which is used to form lists of variables and registers.
 
 An item is generated for each occurrence of an operator. For example, the parser routine
-SimpleExpression, (here simplified) analyzes two terms x and y, and calls New:
+*SimpleExpression*, (here simplified) analyzes two terms *x* and *y*, and calls *New*:
 
+```
 PROCEDURE SimpleExpression(VAR x: LSB.Item);
-VAR y, z: LSB.Item;
+  VAR y, z: LSB.Item;
 BEGIN ... term(x);
-WHILE sym = LSS.plus DO
-
-```
-LSC
-Parser &
-Tree-Gen
-```
-```
-LSS
-Scanner
-```
-```
-LSV
-Verilog
-Generator
-```
-```
-LSP
-Tree
-Display
-```
-```
-LSB
-Base
-```
-
-LSS.Get(sym); term(y); z := New(add, x, y); CheckTypes(x, y, z); x := z
-END
+  WHILE sym = LSS.plus DO
+    LSS.Get(sym); term(y); z := New(add, x, y); CheckTypes(x, y, z); x := z
+  END
 END SimpleExpression;
 
 Tag values are
@@ -295,15 +259,18 @@ As an example, the following simple piece of text is translated into the tree sh
 
 ```
 MODULE M (IN x: BIT; OUT y: BIT);
-REG z: BIT;
+  REG z: BIT;
 BEGIN z := x + 1; y := z
 END M.
 ```
+
+image3.png
+
 Apart from parsing the source text and generating the tree, a primary task of module LSP is type
 checking. Every item and object has a data type, and for each operation the compatibility of the
 operand types must be verified and the result type determined. For relations the result type is
-always BIT. Checking for compatibility is done by CheckTypes(x, y, z) in expressions, and by
-CheckAssign(x, y) for assignments.
+always BIT. Checking for compatibility is done by *CheckTypes(x, y, z)* in expressions, and by
+*CheckAssign(x, y)* for assignments.
 
 These two routines are relatively complex, althouth the rules are quite simple. A complication arises
 from the circumstance that the types of a varibale and the size (no. of elements) are stored in the
@@ -330,77 +297,38 @@ target languages. Here are shown the results of translating the two sample modul
 beginning of chapter 1.
 
 ```
-x
-```
-```
-var
-```
-```
-y
-```
-```
-var
-```
-```
-z
-```
-```
-reg
-```
-```
-root
-```
-```
-+
-```
-```
-lit
-```
-```
-1
-```
-```
-next
-```
-```
-b
-```
-```
-a
-```
-
-```
 `timescale 1ns / 1 ps
 module Counter0( // translated from Lola
-input clk,
-output [3:0] d);
-reg [3:0] R;
-assign d = R;
-always @ (posedge clk) begin
-R <= {(R[3] ^ (((R[3] & R[2]) & R[1]) & R[0])), (R[2] ^ ((R[2] & R[1]) & R[0])), (R[1] ^ (R[1] & R[0])), ~R[0]};
-end
-```
-```
+  input clk,
+  output [3:0] d);
+
+  reg [3:0] R;
+  assign d = R;
+  always @ (posedge clk) begin
+    R <= {(R[3] ^ (((R[3] & R[2]) & R[1]) & R[0])), (R[2] ^ ((R[2] & R[1]) & R[0])), (R[1] ^ (R[1] & R[0])), ~R[0]};
+  end
 endmodule
 ```
+
 ```
 `timescale 1ns / 1 ps
 module Counter1( // translated from Lola
-input clk, rst, enb,
-output [3:0] d);
-reg [3:0] R;
-assign d = R;
-always @ (posedge clk) begin
-R <= rst? 0 : enb? (R + 1) : R;
-end
+  input clk, rst, enb,
+  output [3:0] d);
+
+  reg [3:0] R;
+  assign d = R;
+  always @ (posedge clk) begin
+    R <= rst? 0 : enb? (R + 1) : R;
+  end
 endmodule
 ```
-The generator procedure LSV.List traverses the list of declared objects, starting from the global variable
-root, three times. In the first pass procedure ObjList0 visits variables (including parameters) and outputs
+The generator procedure *LSV.List* traverses the list of declared objects, starting from the global variable
+*root*, three times. In the first pass procedure *ObjList0* visits variables (including parameters) and outputs
 their declarations in the syntax of Verilog. For this purpose, type information is accessed.
 
 In the second pass, assignments to variables are processed. For simple variables and arrays, the form
-v := x is converted into Verilog's assign v = x; Also, module instantiations are processed. For example,
+*v := x* is converted into Verilog's *assign v = x;* Also, module instantiations are processed. For example,
 given variable declarations
 
 ```
@@ -429,7 +357,7 @@ are converted into
 
 ```
 always @ (posedge clk) begin
-R0 <= x; R1 <= y;
+  R0 <= x; R1 <= y;
 end
 ```
 If a clock is specified, it appears in the always clause.. For example, given the declaration
@@ -441,14 +369,12 @@ the assignments are converted into
 
 ```
 always @ (posedge clk50) begin
-R0 <= x; R1 <= y;
+  R0 <= x; R1 <= y;
 end
 ```
 The structure of module LSV is less regular than one might wish. This is mostly due to some
 peculiarities of the syntax of Verilog. For example, the declaration of a matrix A, in Lola simply specified
-
-
-as A: [m] [n] BIT; is declared in Verilog as [n-1:0] A [m-1:0], requiring the last dimension to be treated
+as *A: [m] [n] BIT;* is declared in Verilog as [n-1:0] A [m-1:0], requiring the last dimension to be treated
 differently from the others. Another example is that parameter lists use commas to separate elements,
 whereas in variable declaration semicolons are used.
 
