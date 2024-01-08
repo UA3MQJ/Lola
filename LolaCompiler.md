@@ -181,7 +181,7 @@ where
   ctrl - control: 0 for input, 1 for output
 ```
 
-image1.png
+![image1](https://raw.githubusercontent.com/UA3MQJ/Lola/main/image1.png)
 
 ## 3. The Lola-2 compiler
 
@@ -193,7 +193,7 @@ from the scanner by calling procedure *Get*. The output, generated while reading
 another text, but a binary tree. A generator module (LSV), described later, subsequently traverses
 this tree.
 
-image2.png
+![image2](https://raw.githubusercontent.com/UA3MQJ/Lola/main/image2.png)
 
 The relevant commands are *LSC.Compile* @ and *LSV.List filename*.
 
@@ -264,7 +264,7 @@ BEGIN z := x + 1; y := z
 END M.
 ```
 
-image3.png
+![image3](https://raw.githubusercontent.com/UA3MQJ/Lola/main/image3.png)
 
 Apart from parsing the source text and generating the tree, a primary task of module LSP is type
 checking. Every item and object has a data type, and for each operation the compatibility of the
