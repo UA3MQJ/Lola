@@ -1,8 +1,7 @@
 # Lola-2: A Logic Description Language
 
-```
 N. Wirth, 24.4.1994 / 1.9.
-```
+
 Lola is a notation (language) for specifying digital circuits (logic). In many ways it resembles a
 programming language. However, Lola texts describe static circuits rather than dynamic processes.
 Objects occurring in a description can be variables representing signals or registers. Their values
