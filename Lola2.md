@@ -31,7 +31,7 @@ Identifiers are used to denote constants, variables, and types.
 identifier = letter {letter | digit}.
 integer = digit {digit} ["H"].
 ```
-Examples: Lola begin 100 100H 0FFH
+Examples: `Lola begin 100 100H 0FFH`
 
 Capital and lower case letters are considered as distinct. If an integer is followed by the capital letter
 H it is in hexadecimal form with digits 0, 1, ..., 9, and A ... F.
@@ -53,7 +53,7 @@ An array type is specified by the form [n]T, where T is the type of the elements
 specifies the number of elements. In expressions, individual elements are designated by an index.
 Indices range from 0 to the array's length minus 1.
 
-Examples: [10] BIT [8][16] BIT
+Examples: `[10] BIT [8][16] BIT`
 
 The identifiers BIT, BYTE and WORD are predeclared. The latter denote arrays of 8 and 32 bits
 respectively.
@@ -74,10 +74,10 @@ declared in an identifier list have the same type. Variables of type [n] BIT are
 ```
 varlist = identifier {"," identifier} ":" type.
 ```
-Examples: x, y: BIT a: [32] BIT R: BIT Q (clk50): [4] BIT
+Examples: `x, y: BIT a: [32] BIT R: BIT Q (clk50): [4] BIT`
 
 If a register declaration contains an expression, this denotes the register's clock. The default is a
-variable clk, which must be declared (see also Section 7).
+variable *clk*, which must be declared (see also Section 7).
 
 ## 5. Expressions
 
@@ -91,8 +91,8 @@ of an array are selected by an index. (e.g. a.5, a[10]).
 & logical conjunction (and)
 ~ logical negation (not)
 + arithmetic sum
-```
 - arithmetic difference
+```
 
 Operands are registers, variables, and constants. Whereas variables denote the value given by the
 assigned expression, registers denote the value of the expression in the preceding clock cycle.
@@ -110,22 +110,25 @@ selector = "." factor | "[" expression [":" expression] "]".
 constructor = "{" element {"," element} "}".
 element = expression ["!" integer].
 ```
-The form a[m : n] denotes the range of indexed elements a[m], ... , a[n].
+The form *a[m : n]* denotes the range of indexed elements *a[m], ... , a[n]*.
 
-Constructors denote bitstrings and are sequences of elements. The length (number of bits) of every
+*Constructors* denote bitstrings and are sequences of elements. The length (number of bits) of every
 element must be known. This length is specified in a declaration, and in this case of constants by an
 explicit integer. For example 10'8 denotes the number 10 represented by 8 bits. The length of the
 bitstring is the sum of the lengths of its elements. Also, an element can be followed by a replication
-factor of the form !n.
+factor of the form *!n*.
 
-A conditional expression of the form z := cond -> x : y expresses represents a multiplexer. Cond
-must be of type BIT. If cond yields 1, z is equal to x, otherwise to y.
+A conditional expression of the form *z := cond -> x : y* expresses represents a multiplexer. *Cond*
+must be of type BIT. If *cond* yields 1, *z* is equal to *x*, otherwise to *y*.
 
-Examples: x count 1 100 a.4 a[20] operands
-a[15 : 8] range
-{u, a.4, a[25:20], 0'8, 15'4} constructor (20 bit)
-(x & y) | (z & w) (m + n) + 10 simple expressions
-a.5 -> b : c expression
+Examples: 
+```
+x count 1 100 a.4 a[20]         operands
+a[15 : 8]                       range
+{u, a.4, a[25:20], 0'8, 15'4}   constructor (20 bit)
+(x & y) | (z & w) (m + n) + 10  simple expressions
+a.5 -> b : c                    expression
+```
 
 ## 6. Assignments and statements
 
@@ -133,14 +136,17 @@ Assignments serve to define a register's or a variable's value, which is specifi
 An assignment must be understood as a variable's definition (in contrast to an identifier's
 
 
-declaration). In an assignment v := x, v and x do not have the same roles, and this asymmetry is
-emphasized by the use of the symbol := instead of the symmetric equal sign. v and x must be of the
+declaration). In an assignment *v := x, v* and *x* do not have the same roles, and this asymmetry is
+emphasized by the use of the symbol := instead of the symmetric equal sign. *v* and *x* must be of the
 same type.
 
 ```
 assignment = variable ":=" expression..
 ```
-Examples: x := y & z a := {x, y, z} R := rst -> 0 : enb -> x : R
+Examples: 
+```
+x := y & z a := {x, y, z} R := rst -> 0 : enb -> x : R
+```
 
 Every variable and register can be assigned in only one single assignment statement, and the
 assignment must be to the entire variable (not to elements). The only exception is the indexed
@@ -174,8 +180,9 @@ output = expression. to interface
 control = expression. 1 for output, 0 for input from interface
 ```
 Examples
-
+```
 TS(io, in, out, ~wr) TS(io[k], in[k], out[k], ctrl[k])
+```
 
 The parameters may be simple variables or arrays. They must be of the same type, except that the
 control parameter may be of type BIT, even if the other parameters are arrays. In this case it
@@ -202,20 +209,17 @@ Example of a module type:
 
 ```
 TYPE Counter = MODULE (IN clk, rst, enb: BIT; OUT data: WORD);
-REG (clk) R: Word;
+  REG (clk) R: Word;
 BEGIN data := R;
-R := ~rst -> 0 : enb -> R + 1 : R
-```
-
-```
+  R := ~rst -> 0 : enb -> R + 1 : R
 END Counter
 ```
-Given a variable of this type (cnt: Counter), its instantiation could be
+Given a variable of this type *(cnt: Counter)*, its instantiation could be
 
 ```
 cnt (clock, reset, enable, val)
 ```
-where clock, reset, enable and data are variables called actual parameters. They must be expressions
+where *clock, reset, enable* and *data* are variables called *actual parameters*. They must be expressions
 of the corresponding types.
 
 ```
