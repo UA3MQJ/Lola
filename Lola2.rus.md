@@ -34,8 +34,6 @@ integer = digit {digit} ["H"].
 ```
 Пример: Lola begin 100 100H 0FFH
 
-Capital and lower case letters are considered as distinct. If an integer is followed by the capital letter
-H it is in hexadecimal form with digits 0, 1, ..., 9, and A ... F.
 
 Заглавные и строчные буквы рассматриваются как разные. Если за целым числом следует заглавная буква, то оно представлено в шестнадцатеричной форме с цифрами `0, 1, ..., 9` и `A..F`.
 
@@ -43,9 +41,6 @@ H it is in hexadecimal form with digits 0, 1, ..., 9, and A ... F.
 между любыми двумя символами в тексте Lola.
 
 ## 2. Simple types and array types - простые типы и типы "массив"
-
-Every variable in Lola has a type. The elementary type is BIT (BInary digiT), and its variables
-assume the values 0 or 1.
 
 Каждая переменная в Lola имеет тип. Элементарным типом является BIT (двоичная цифра), и такая переменная
 принимает значения `0` или `1`.
@@ -73,9 +68,6 @@ ConstDeclaration = identifier "=" integer ";".
 
 ## 4. Variable and register declarations - объявление переменных и регистров
 
-Variable declarations introduce registers and variables and associate a type with them. All variables
-declared in an identifier list have the same type. Variables of type [n] BIT are called bitstrings.
-
 Объявления переменных вводят регистры и переменные, так же связывают с ними тип. Все переменные
 , объявленные в списке идентификаторов, имеют один и тот же тип. Переменные типа `[n] BIT` называются битовыми строками.
 
@@ -86,9 +78,6 @@ varlist = identifier {"," identifier} ":" type.
 ```
 x, y: BIT     a: [32] BIT     R: BIT     Q (clk50): [4] BIT
 ```
-
-If a register declaration contains an expression, this denotes the register's clock. The default is a
-variable clk, which must be declared (see also Section 7).
 
 Если объявление регистра содержит выражение, это обозначает тактовый сигнал регистра. По умолчанию используется
 переменная clk, которая должна быть объявлена (см. также раздел 7).
@@ -125,19 +114,15 @@ constructor = "{" element {"," element} "}".
 element = expression ["!" integer].
 ```
 
-Определение `a[m : n]` обозначает диапазон индексированных элементов `a[m], ... , a[n]`.
+Определение *a[m : n]* обозначает диапазон индексированных элементов *a[m], ... , a[n]*.
 
-Конструкторы обозначают битовые строки и представляют собой последовательности элементов. Длина (количество битов) каждого
-элемента должна быть известна. Эта длина указывается в объявлении, а в данном случае констант
-- явным целым числом. Например, `10'8` обозначает число 10, представленное 8 битами. Длина
+*Конструкторы* обозначают битовые строки и представляют собой последовательности элементов. Длина (количество битов) каждого
+элемента должна быть известна. Эта длина указывается в объявлении, а в данном случае константа - явным целым числом. Например, 10'8 обозначает число 10, представленное 8 битами. Длина
 битовой строки равна сумме длин ее элементов. Кроме того, за элементом может следовать
-коэффициент репликации вида !n.
+коэффициент репликации вида *!n*.
 
-A conditional expression of the form z := cond -> x : y expresses represents a multiplexer. Cond
-must be of type BIT. If cond yields 1, z is equal to x, otherwise to y.
-
-Условное выражение вида `z := cond -> x : y` выражает мультиплексор. `Cond`
-должно быть типа `BIT`. Если значение связи равно 1, то `z` будет равно `x`, иначе `y`.
+Условное выражение вида *z := cond -> x : y* определяет мультиплексор. *Cond*
+должно быть типа BIT. Если значение связи равно 1, то *z* будет равно *x*, иначе *y*.
 
 Пример: 
 ```
@@ -153,13 +138,8 @@ a.5 -> b : c выражение
 Присвоения служат для определения значения регистра или переменной, которое задается выражением.
 Присвоение должно пониматься как определение переменной (в отличие от определения идентификатора)
 
-
-In an assignment v := x, v and x do not have the same roles, and this asymmetry is
-emphasized by the use of the symbol := instead of the symmetric equal sign. v and x must be of the
-same type.
-
-В присвоении `v := x`, `v` и `x` имеют  разные роли, и эта асимметрия
-подчеркивается использованием символа `:=` вместо симметричного знака равенства. `v` и `x` должны быть
+В присвоении *v := x*, *v* и *x* имеют  разные роли, и эта асимметрия
+подчеркивается использованием символа *:=* вместо симметричного знака равенства. *v* и *x* должны быть
 одного типа.
 
 ```
@@ -172,15 +152,9 @@ a := {x, y, z}
 R := rst -> 0 : enb -> x : R
 ```
 
-Every variable and register can be assigned in only one single assignment statement, and the
-assignment must be to the entire variable (not to elements). The only exception is the indexed
-assignment to an array of registers (e.g. R[n] := x).
-
-For example, instead of
-
 Каждая переменная и регистр могут быть назначены только в одном операторе присваивания, и
 присваивание должно быть всей переменной (не элементам). Единственным исключением является индексированное
-присваивание массиву регистров (например, `R[n] := x`).
+присваивание массиву регистров (например, *R[n] := x*).
 
 Например, вместо такого присваивания
 
@@ -220,13 +194,8 @@ TS(io[k], in[k], out[k], ctrl[k])
 
 ## 7. Modules - модули
 
-A module specifies constants, types, variables, registers, and assignments to variables and
-registers. Modules are specified as types, and variables can be declared of this type. This implies
-that modules can be replicated.
-
 Модуль определяет константы, типы, переменные, регистры и присвоения переменным и
-регистрам. Модули задаются как типы, и переменные могут быть объявлены с этим типом. Это подразумевает
-, что модули могут реплицироваться.
+регистрам. Модули задаются как типы, и переменные могут быть объявлены с этим типом. Это подразумевает, что модули могут реплицироваться.
 
 ```
 ModuleType = "MODULE" ["*"] unit ";".
@@ -264,9 +233,6 @@ instantiation = identifier selector "(" expression {"," expression} ")".
 ```
 module = "MODULE" identifier unit identifier ".".
 ```
-Evidently, a "main program" is the combined declaration of an (anonymous) module type and of a
-single instance. The identifier at the end of the module's declaration must be the same as the one
-following the symbol MODULE.
 
 Очевидно, что "основная программа" - это комбинированное объявление (анонимного) типа модуля в
 единственном экземпляре. Идентификатор в конце объявления модуля должен совпадать с идентификатором,
